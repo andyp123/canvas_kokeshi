@@ -4,6 +4,8 @@ MEASURES.defineMeasures = function() {
 	var X = 0; //rest for padding
 
 	MEASURES["EMPTY"] = [ X ];
+
+	//general patterns
 	MEASURES["BASIC_1"] = [ 1 ];
 	MEASURES["BASIC_2"] = [ 1,1 ];
 	MEASURES["BASIC_3"] = [ 1,X,1,1 ];
@@ -11,7 +13,11 @@ MEASURES.defineMeasures = function() {
 	MEASURES["BASIC_5"] = [ 1,1,1,X ];
 	MEASURES["BASIC_6"] = [ 1,X,1,1,1,X,X,X ];
 
-	MEASURES["BACKING"] = [ 2,2,2,2 ];
+	//koto patterns
+	MEASURES["KOTO_EASY_1"] = [ 1,X,2,2 ];
+
+	//metronome patterns
+	MEASURES["BACKING_1"] = [ 1,1,1,1 ];
 }();
 
 

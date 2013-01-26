@@ -28,7 +28,7 @@ var g_SOUNDMANAGER = new SoundManager();
 var g_FRAMERATE = 60;
 var g_FRAMETIME_MS = Math.ceil(1000.0 / g_FRAMERATE);
 var g_FRAMETIME_S = 1.0 / g_FRAMERATE;
-var g_GAMETIME_MS = Math.ceil(1000 / g_FRAMERATE);
+var g_GAMETIME_MS = Math.ceil(1000.0 / g_FRAMERATE);
 var g_GAMETIME_FRAMES = 0;
 
 var g_INIT_SUB = null; //user init func

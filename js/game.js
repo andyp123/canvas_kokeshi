@@ -3,23 +3,33 @@
 //queue all the texture data in the system
 function game_queueData() {
 		var data = [
-			"gfx/numbers.png",
+			"gfx/title_ko.png",
+			"gfx/title_keshi.png",
+			"gfx/title_moon.png",
+			//bg parts
+			"gfx/bg_far.png",
+			"gfx/bg_far_clouds.png",
+			"gfx/bg_mid_trees.png",
+			"gfx/bg_mid_clouds.png",
+			"gfx/bg_near_trees.png",
+			"gfx/bg_platform.png",
+			//kokeshi parts
+			"gfx/kokeshi_base.png",
 		];
 		g_ASSETMANAGER.queueAssets(data);
 		data = [
-			"sfx/XE8_Clap.wav",
-			"sfx/XE8_Cowbell_1.wav",
-			"sfx/XE8_Cowbell_2.wav",
-			"sfx/XE8_Snare_1.wav",
-			"sfx/XE8_Snare_2.wav",
-			"sfx/XE8_Snare_3.wav",
-			"sfx/XE8_Tom_High.wav",
-			"sfx/XE8_Tom_Low.wav",
+			"sfx/intro.wav",
 			//taiko
 			"sfx/chu22.wav",
-			"sfx/click91.wav",
+			"sfx/stick1.wav",
 			"sfx/shime65.wav",
 			"sfx/shime95.wav",
+			"sfx/bell1.wav",
+			//koto
+			"sfx/koto_a.mp3",
+			"sfx/koto_b.mp3",
+			"sfx/koto_c.mp3",
+			"sfx/koto_d.mp3",
 		];
 		g_SOUNDMANAGER.loadSounds(data);
 }
@@ -90,7 +100,7 @@ function g_addEventListeners() {
 }
 
 function game_init() {
-	if(g_SCREEN.init('screen', 512, 384)) {
+	if(g_SCREEN.init('screen', 400, 640)) {
 		g_CAMERA = new Camera(0, 0);	
 		g_GAMEMANAGER = new GameManager();
 		g_VECTORSCRATCH = new ScratchPool(function() { return new Vector2(0, 0); }, 16);
