@@ -3,8 +3,7 @@ Very simple manager to handle input and updating everything
 */
 function GameManager() {
 	this.timeline_p1 = new Timeline(32, 32);
-	this.timeline_p2 = new Timeline(32, 96);
-	//this.timeline_p2.autoplay = false;
+	this.timeline_p2 = new Timeline(32, 64);
 
 	this.sounds = [
 		"CHU22",
@@ -20,6 +19,12 @@ function GameManager() {
 		"BASIC_1",
 		"BASIC_3"
 	]);
+
+	this.timeline_p2.sounds = this.sounds;
+	this.timeline_p2.addMeasures([
+		"BACKING",
+	]);
+	//this.timeline_p2.autoplay = true;
 }
 
 GameManager.prototype.generateTileWorld = function(sizeX, sizeY, seed) {
@@ -43,6 +48,7 @@ GameManager.prototype.updateInput = function() {
 
 	if (g_KEYSTATES.justPressed( KEYS.SPACE )) {
 		this.timeline_p1.toggleAutoplay();
+		this.timeline_p2.toggleAutoplay();
 	}
 
 	if (g_KEYSTATES.justPressed(keysP1.A)) {
@@ -61,14 +67,13 @@ GameManager.prototype.updateInput = function() {
 	}
 
 	if (g_KEYSTATES.justPressed( KEYS.M )) {
-		this.timeline_p1.tempo += 0.125;
+		this.timeline_p1.tempo = 1;
 	}
 	if (g_KEYSTATES.justPressed( KEYS.N )) {
-		this.timeline_p1.tempo -= 0.125;
+		this.timeline_p1.tempo += 1;
 	}
 }
 
-	var keysP1 = { A: KEYS.Q, B: KEYS.W };
 GameManager.prototype.draw = function(ctx, xofs, yofs) {
 }
 

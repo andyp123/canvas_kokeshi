@@ -11,7 +11,7 @@ MEASURES.defineMeasures = function() {
 	MEASURES["BASIC_5"] = [ 1,1,1,X ];
 	MEASURES["BASIC_6"] = [ 1,X,1,1,1,X,X,X ];
 
-	MEASURES["BACKING"] = [ 1,2,2,2 ];
+	MEASURES["BACKING"] = [ 2,2,2,2 ];
 }();
 
 
