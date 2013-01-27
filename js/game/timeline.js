@@ -1,26 +1,3 @@
-var MEASURES = {};
-
-MEASURES.defineMeasures = function() {
-	var X = 0; //rest for padding
-
-	MEASURES["EMPTY"] = [ X ];
-
-	//general patterns
-	MEASURES["BASIC_1"] = [ 1 ];
-	MEASURES["BASIC_2"] = [ 1,1 ];
-	MEASURES["BASIC_3"] = [ 1,X,1,1 ];
-	MEASURES["BASIC_4"] = [ 1,X,1,1,1,X,1,X ];
-	MEASURES["BASIC_5"] = [ 1,1,1,X ];
-	MEASURES["BASIC_6"] = [ 1,X,1,1,1,X,X,X ];
-
-	//koto patterns
-	MEASURES["KOTO_EASY_1"] = [ 1,X,2,2 ];
-
-	//metronome patterns
-	MEASURES["BACKING_1"] = [ 1,1,1,1 ];
-}();
-
-
 function BeatInfo() {
 	this.type = 0;
 	this.time = 0.0;
@@ -28,8 +5,7 @@ function BeatInfo() {
 	this.measureIndex = 0;
 }
 
-function Timeline(posX, posY) {
-	var m = MEASURES;
+function Timeline(posX, posY, beatSprite) {
 	this.measures = [];
 	this.measureIndex = 0;
 
@@ -45,6 +21,7 @@ function Timeline(posX, posY) {
 	this.beatInfo = new BeatInfo();
 
 	//renderable stuff
+	this.beatSprite = beatSprite;
 	posX = posX || 0;
 	posY = posY || 0;
 	this.pos = new Vector2(posX, posY);
@@ -158,7 +135,8 @@ Timeline.prototype.drawMeasure = function(ctx, xofs, yofs, measure) {
 		y = yofs + Math.floor(this.barHeight * 0.5);
 		for (i = 0; i < measure.length; ++i) {
 			if (measure[i] > 0) {
-				Util.drawRectangleCentered(ctx, x, y, 8, 8);
+				this.beatSprite.draw(ctx, x, y, measure[i] - 1);
+				//Util.drawRectangleCentered(ctx, x, y, 8, 8);
 			}
 			x += beatWidth;
 		}
@@ -174,11 +152,18 @@ Timeline.prototype.drawDebug = function(ctx, xofs, yofs) {
 
 	var i, x, y;
 
+	//draw bars
+	ctx.strokeStyle = "rgb(64,64,64)";
+	for (i = 0; i < this.measures.length; ++i) {
+		x = this.pos.x + xofs + i * this.measureWidth;
+		y = this.pos.y + yofs
+		Util.drawLine(ctx, x, y, x, y + this.barHeight);
+	}
+
 	//draw current time
-	ctx.strokeStyle = "rgb(0,255,0)";
+	ctx.strokeStyle = "rgb(255,255,255)";
 	x = this.pos.x + xofs + Math.floor(this.time / this.measures.length * (this.measureWidth * this.measures.length));
 	y = this.pos.y + yofs;
-	//console.log("time: " + x + "," + y);
 	Util.drawLine(ctx, x, y, x, y + this.barHeight);
 
 	//draw current measure
@@ -194,16 +179,8 @@ Timeline.prototype.drawDebug = function(ctx, xofs, yofs) {
 		}
 	}
 
-	//draw bars
-	ctx.strokeStyle = "rgb(64,128,64)";
-	for (i = 0; i < this.measures.length; ++i) {
-		x = this.pos.x + xofs + (i + 1) * this.measureWidth;
-		y = this.pos.y + yofs
-		Util.drawLine(ctx, x, y, x, y + this.barHeight);
-	}
-
 	//draw outline
-	ctx.strokeStyle = "rgb(255,255,255)";
+	//ctx.strokeStyle = "rgb(255,255,255)";
 	//Util.drawRectangle(ctx, this.pos.x, this.pos.y, this.measureWidth * this.measures.length, this.barHeight);
 }
 

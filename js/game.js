@@ -15,11 +15,27 @@ function game_queueData() {
 			"gfx/bg_platform.png",
 			//kokeshi parts
 			"gfx/kokeshi_base.png",
+			"gfx/kokeshi_head.png",
+			"gfx/kokeshi_0.png",
+			"gfx/kokeshi_1.png",
+			"gfx/kokeshi_2.png",
+			"gfx/kokeshi_3.png",
+			"gfx/kokeshi_4.png",
+			"gfx/kokeshi_5.png",
+			"gfx/kokeshi_6.png",
+			"gfx/kokeshi_7.png",
+			"gfx/kokeshi_8.png",
+			"gfx/kokeshi_9.png",
+			"gfx/kokeshi_10.png",
+			//ui parts
+			"gfx/beats_p1.png",
+			"gfx/beats_p2.png",
 		];
 		g_ASSETMANAGER.queueAssets(data);
 		data = [
 			"sfx/intro.wav",
 			//taiko
+			"sfx/click91.wav",
 			"sfx/chu22.wav",
 			"sfx/stick1.wav",
 			"sfx/shime65.wav",

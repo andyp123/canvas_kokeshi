@@ -2,8 +2,8 @@
 Very simple manager to handle input and updating everything
 */
 function GameManager() {
-	this.timeline_p1 = new Timeline(16, 560);
-	this.timeline_p2 = new Timeline(16, 592);
+	this.timeline_p1 = new Timeline(16, 560, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P1"), 6, 1) );
+	this.timeline_p2 = new Timeline(16, 592, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P2"), 6, 1) );
 	this.metronome = new Timeline(16, 16);
 	this.metronome.sounds = [ "CLICK91" ];
 	this.metronome.addMeasures([ "BACKING_1" ]);
@@ -23,20 +23,10 @@ function GameManager() {
 	];
 
 	this.timeline_p1.sounds = this.sounds_p1;
-	this.timeline_p1.addMeasures([
-		"KOTO_EASY_1",
-		"KOTO_EASY_1",
-		"BASIC_2",
-		"BASIC_1",
-	]);
+	this.timeline_p1.addMeasures(BARS['KOTO_1']);
 
 	this.timeline_p2.sounds = this.sounds_p2;
-	this.timeline_p2.addMeasures([
-		"BASIC_1",
-		"BASIC_2",
-		"BASIC_1",
-		"BASIC_3",
-	]);
+	this.timeline_p2.addMeasures(BARS['TAIKO_1']);
 
 	this.kokeshi = new Kokeshi();
 	this.background = new Background();

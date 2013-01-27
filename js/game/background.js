@@ -1,6 +1,5 @@
-/* BACKGROUND *****************************************************************
+/* TITLE **********************************************************************
 */
-
 function Title() {
 	this.ko = new Sprite(g_ASSETMANAGER.getAsset("TITLE_KO"));
 	this.keshi = new Sprite(g_ASSETMANAGER.getAsset("TITLE_KESHI"));
@@ -35,6 +34,32 @@ Title.prototype.draw = function(ctx, xofs, yofs) {
 	}
 }
 
+
+/* SCROLLING CLOUDS ***********************************************************
+*/
+function ScrollingClouds(sprite) {
+	this.sprite = sprite;
+	this.sprite.setOffset(Sprite.ALIGN_TOP_LEFT);
+	this.speed = 32.0;
+	this.offset = 0.0;
+}
+
+ScrollingClouds.prototype.update = function() {
+	this.offset += this.speed * g_FRAMETIME_S;
+	this.offset = Math.abs(this.offset % g_SCREEN.width);
+}
+
+ScrollingClouds.prototype.draw = function(ctx, xofs, yofs) {
+	var x = xofs + this.offset - g_SCREEN.width;
+	while (x < g_SCREEN.width) {
+		this.sprite.draw(ctx, x, yofs, 0);
+		x += this.sprite.frameWidth;
+	}
+}
+
+
+/* BACKGROUND *****************************************************************
+*/
 function Background() {
 	this.sprites = {
 		BG_FAR: new Sprite(g_ASSETMANAGER.getAsset("BG_FAR")),
@@ -49,17 +74,24 @@ function Background() {
 		this.sprites[name].setOffset(Sprite.ALIGN_TOP_LEFT);
 	}
 
+	this.clouds_far = new ScrollingClouds(this.sprites['BG_FAR_CLOUDS']);
+	this.clouds_mid = new ScrollingClouds(this.sprites['BG_MID_CLOUDS']);
+	this.clouds_far.speed = 16.0;
+	this.clouds_mid.speed = 48.0;
+
 	this.title = new Title();
 }
 
 Background.prototype.update = function() {
+	this.clouds_far.update();
+	this.clouds_mid.update();
 }
 
 Background.prototype.draw = function(ctx, xofs, yofs) {
 	this.sprites['BG_FAR'].draw(ctx, xofs, yofs, 0);
-	this.sprites['BG_FAR_CLOUDS'].draw(ctx, xofs, yofs + 220, 0);
+	this.clouds_far.draw(ctx, xofs, yofs + 220);
 	this.sprites['BG_MID_TREES'].draw(ctx, xofs, yofs + 200, 0);
-	this.sprites['BG_MID_CLOUDS'].draw(ctx, xofs, yofs + 420, 0);
+	this.clouds_mid.draw(ctx, xofs, yofs + 408);
 	this.sprites['BG_PLATFORM'].draw(ctx, xofs, yofs + 400, 0);
 	this.sprites['BG_NEAR_TREES'].draw(ctx, xofs, yofs + 400, 0);
 
