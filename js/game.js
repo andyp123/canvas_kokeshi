@@ -11,6 +11,7 @@ function game_queueData() {
 			"gfx/bg_far_clouds.png",
 			"gfx/bg_mid_trees.png",
 			"gfx/bg_mid_clouds.png",
+			"gfx/bg_mid_clouds2.png",
 			"gfx/bg_near_trees.png",
 			"gfx/bg_platform.png",
 			//kokeshi parts

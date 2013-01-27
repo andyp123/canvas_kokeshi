@@ -66,6 +66,7 @@ function Background() {
 		BG_FAR_CLOUDS: new Sprite(g_ASSETMANAGER.getAsset("BG_FAR_CLOUDS")),
 		BG_MID_TREES: new Sprite(g_ASSETMANAGER.getAsset("BG_MID_TREES")),
 		BG_MID_CLOUDS: new Sprite(g_ASSETMANAGER.getAsset("BG_MID_CLOUDS")),
+		BG_MID_CLOUDS2: new Sprite(g_ASSETMANAGER.getAsset("BG_MID_CLOUDS2")),
 		BG_NEAR_TREES: new Sprite(g_ASSETMANAGER.getAsset("BG_NEAR_TREES")),
 		BG_PLATFORM: new Sprite(g_ASSETMANAGER.getAsset("BG_PLATFORM")),
 	};
@@ -74,10 +75,12 @@ function Background() {
 		this.sprites[name].setOffset(Sprite.ALIGN_TOP_LEFT);
 	}
 
-	this.clouds_far = new ScrollingClouds(this.sprites['BG_FAR_CLOUDS']);
-	this.clouds_mid = new ScrollingClouds(this.sprites['BG_MID_CLOUDS']);
+	this.clouds_far = new ScrollingClouds(this.sprites["BG_FAR_CLOUDS"]);
+	this.clouds_mid = new ScrollingClouds(this.sprites["BG_MID_CLOUDS"]);
+	this.clouds_mid2 = new ScrollingClouds(this.sprites["BG_MID_CLOUDS2"]);
 	this.clouds_far.speed = 16.0;
 	this.clouds_mid.speed = 48.0;
+	this.clouds_mid2.speed = 24.0;
 
 	this.title = new Title();
 }
@@ -85,12 +88,14 @@ function Background() {
 Background.prototype.update = function() {
 	this.clouds_far.update();
 	this.clouds_mid.update();
+	this.clouds_mid2.update();
 }
 
 Background.prototype.draw = function(ctx, xofs, yofs) {
 	this.sprites['BG_FAR'].draw(ctx, xofs, yofs, 0);
 	this.clouds_far.draw(ctx, xofs, yofs + 220);
 	this.sprites['BG_MID_TREES'].draw(ctx, xofs, yofs + 200, 0);
+	this.clouds_mid2.draw(ctx, xofs, yofs + 300);
 	this.clouds_mid.draw(ctx, xofs, yofs + 408);
 	this.sprites['BG_PLATFORM'].draw(ctx, xofs, yofs + 400, 0);
 	this.sprites['BG_NEAR_TREES'].draw(ctx, xofs, yofs + 400, 0);

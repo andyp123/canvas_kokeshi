@@ -1,9 +1,9 @@
-/* GAME MANAGER *
-Very simple manager to handle input and updating everything
+/* GAME MANAGER ***************************************************************
+Simple manager to handle input and updating everything
 */
 function GameManager() {
-	this.timeline_p1 = new Timeline(16, 560, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P1"), 6, 1) );
-	this.timeline_p2 = new Timeline(16, 592, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P2"), 6, 1) );
+	this.timeline_p1 = new Timeline(16, 560, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P1"), 12, 1) );
+	this.timeline_p2 = new Timeline(16, 592, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P2"), 12, 1) );
 	this.metronome = new Timeline(16, 16);
 	this.metronome.sounds = [ "CLICK91" ];
 	this.metronome.addMeasures([ "BACKING_1" ]);
@@ -22,18 +22,36 @@ function GameManager() {
 		"STICK1",
 	];
 
+	//index into DUETS, which is an array of objects containing a koto and a taiko part
+	this.duetIndex = 0;
+
+	//initialise instruments and first track
+	var duet = DUETS[this.duetIndex];
 	this.timeline_p1.sounds = this.sounds_p1;
-	this.timeline_p1.addMeasures(BARS['KOTO_1']);
+	this.timeline_p1.addMeasures(duet.koto);
 
 	this.timeline_p2.sounds = this.sounds_p2;
-	this.timeline_p2.addMeasures(BARS['TAIKO_1']);
+	this.timeline_p2.addMeasures(duet.taiko);
 
+	//kokeshi and bg
 	this.kokeshi = new Kokeshi();
 	this.background = new Background();
 }
 
 GameManager.prototype.startGame = function() {
 }
+
+//start game
+//load new duet
+//play duet once
+//play one bar of metronome
+//check player input as player performs duet
+//repeat the pattern until they make no mistakes
+//if no mistakes made
+//add a level to the kokeshi
+//load next duet
+//repeat
+
 
 GameManager.prototype.update = function() {
 	if (g_GAMETIME_MS > 1000) {
@@ -65,6 +83,8 @@ GameManager.prototype.updateInput = function() {
 	if (g_KEYSTATES.justPressed( KEYS.SPACE )) {
 		timeline_p1.toggleAutoplay();
 		timeline_p2.toggleAutoplay();
+	}
+	if (g_KEYSTATES.justPressed( KEYS.M )) {
 		metronome.toggleAutoplay();
 	}
 
@@ -82,13 +102,13 @@ GameManager.prototype.updateInput = function() {
 	}
 
 	//change tempo
-	if (g_KEYSTATES.justPressed( KEYS.M )) {
+	if (g_KEYSTATES.justPressed( KEYS.X )) {
 		timeline_p1.tempo = 0.5;
 		timeline_p2.tempo = 0.5;
 		metronome.tempo = 0.5;
 
 	}
-	if (g_KEYSTATES.justPressed( KEYS.N )) {
+	if (g_KEYSTATES.justPressed( KEYS.Z )) {
 		timeline_p1.tempo += 0.25;
 		timeline_p2.tempo += 0.25;
 		metronome.tempo += 0.25;
