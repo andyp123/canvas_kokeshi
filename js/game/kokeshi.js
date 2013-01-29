@@ -42,7 +42,7 @@ Kokeshi.prototype.update = function() {
 
 Kokeshi.prototype.draw = function(ctx, xofs, yofs) {
 	var xpos = g_SCREEN.width * 0.5 + xofs;
-	var progressIndex = Math.floor(Util.clampScaled(g_GAMETIME_MS, 0, 10000) * this.sprites.length);
+	var progressIndex = this.sprites.length;//Math.floor(Util.clampScaled(g_GAMETIME_MS, 0, 10000) * this.sprites.length);
 
 	//draw head parts
 	ctx.save();

@@ -185,6 +185,21 @@ Util.objToString = function(o) {
 	var pv;
 	var rv = "";
 	for (p in o) {
+		rv += "[" + p + ": ";
+		pv = new String(o[p]);
+		if (pv.search("function") == 0) {
+			rv += "[FUNCTION], ";
+		} else {
+			rv += pv + "], ";
+		}	
+	}
+	return rv;
+}
+
+Util.objToString_HTML = function(o) {
+	var pv;
+	var rv = "";
+	for (p in o) {
 		rv += "<b>" + p + "</b>: ";
 		pv = new String(o[p]);
 		if (pv.search("function") == 0) {

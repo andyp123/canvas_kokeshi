@@ -6,7 +6,7 @@ function GameManager() {
 	this.timeline_p2 = new Timeline(16, 592, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P2"), 12, 1) );
 	this.metronome = new Timeline(16, 16);
 	this.metronome.sounds = [ "CLICK91" ];
-	this.metronome.addMeasures([ "BACKING_1" ]);
+	//this.metronome.addMeasures([ "BACKING_1" ]);
 	//this.metronome.autoplay = true;
 
 	this.sounds_p1 = [
@@ -22,16 +22,22 @@ function GameManager() {
 		"STICK1",
 	];
 
+
+	this.keysP1 = [ KEYS.Q, KEYS.W, KEYS.E, KEYS.R ];
+	this.keysP2 = [ KEYS.U, KEYS.I, KEYS.O, KEYS.P ];
+
 	//index into DUETS, which is an array of objects containing a koto and a taiko part
 	this.duetIndex = 0;
 
 	//initialise instruments and first track
 	var duet = DUETS[this.duetIndex];
 	this.timeline_p1.sounds = this.sounds_p1;
+	this.timeline_p1.controls = this.keysP1;
 	this.timeline_p1.addMeasures(duet.koto);
 
 	this.timeline_p2.sounds = this.sounds_p2;
-	this.timeline_p2.addMeasures(duet.taiko);
+	this.timeline_p2.controls = this.keysP2;
+	//this.timeline_p2.addMeasures(duet.taiko);
 
 	//kokeshi and bg
 	this.kokeshi = new Kokeshi();
@@ -73,8 +79,8 @@ GameManager.prototype.updateInput = function() {
 	var i;
 
 	//mostly input for debug and testing
-	var keysP1 = [ KEYS.Q, KEYS.W, KEYS.E, KEYS.R ];
-	var keysP2 = [ KEYS.U, KEYS.I, KEYS.O, KEYS.P ];
+	var keysP1 = this.keysP1;
+	var keysP2 = this.keysP2;
 
 	var timeline_p1 = this.timeline_p1;
 	var timeline_p2 = this.timeline_p2;

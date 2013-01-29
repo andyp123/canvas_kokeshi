@@ -20,7 +20,7 @@ MEASURES.defineMeasures = function() {
 
 	//koto patterns
 	MEASURES["KOTO_EASY_1"] = [ 1,X,2,2 ];
-	MEASURES["KOTO_EASY_2"] = [ 1,X,2,X ];
+	MEASURES["KOTO_EASY_2"] = [ 1,2 ];
 	MEASURES["KOTO_EASY_3"] = [ 1,1,2,X ];
 
 	MEASURES["KOTO_MEDIUM_1"] = [ 2,1,3,1 ];
@@ -55,6 +55,9 @@ MEASURES.defineMeasures = function() {
 	MEASURES["TAIKO_HARD_6"] = [ 1,X,2,1,1,X,2,1 ];
 
 
+	MEASURES["TAIKO_HARD_7"] = [ 1,X,1,1,4,X,1,X ];
+	MEASURES["TAIKO_HARD_8"] = [ 2,X,3,2,4,X,1,X ];
+
 
 	//metronome patterns
 	MEASURES["BACKING_1"] = [ 1,1,1,1 ];
@@ -64,11 +67,15 @@ MEASURES.defineMeasures = function() {
 //series of measures to make an entire bar
 var BARS = {};
 BARS.defineBars = function() {
+	BARS["EMPTY"] = [
+		"EMPTY",
+	];
+
 	BARS["KOTO_EASY_1"] = [
 		"KOTO_EASY_2",
 		"KOTO_EASY_3",
 		"KOTO_EASY_2",
-		"BASIC_1",
+		"BASIC_2",
 	];
 	BARS["TAIKO_EASY_1"] = [
 		"BASIC_1",
@@ -140,6 +147,13 @@ BARS.defineBars = function() {
 		"TAIKO_HARD_5",
 		"TAIKO_HARD_6",
 		"TAIKO_HARD_5",
+	];
+
+	BARS["TAIKO_HARD_3"] = [
+		"TAIKO_HARD_7",
+		"TAIKO_HARD_8",
+		"TAIKO_HARD_7",
+		"TAIKO_HARD_8",
 	];
 }();
 

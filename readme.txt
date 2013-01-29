@@ -6,6 +6,8 @@ WARNING: this version of Kokeshi is still gameplay incomplete as it is being
 submitted into the Global Game Jam 2013 to meet the deadline. I will continue
 to work on it over the next couple of days and add the missing features, as
 the current version is more of a music toy than a rhythm game.
+
+For updates, see the github page: https://github.com/andyp123/canvas_kokeshi
 --------------------------------------------------------------------------------
 
 Kokeshi is a Japanese themed rhythm action game where you must master the koto
@@ -26,6 +28,21 @@ I thought that maybe the two instrumentalists (not yet implemented!) on either
 side of the doll could be a couple who had a baby that they killed and are
 trying to capture the soul of their baby in the kokeshi doll in order to be
 forgiven by the gods.
+
+
+Installation
+------------
+This game runs in a web browser. Simply extract the files to anywhere on your
+computer and run in a modern browser that supports HTML5 features such as
+canvas and sound. Make sure you have not disabled javascript!
+
+You can also run the game from this link:
+http://htmlpreview.github.com/?https://github.com/andyp123/canvas_kokeshi/blob/master/index.html
+
+Be aware that due to problems with HTML5 audio, the sound might not be very
+in sync with your key presses, so it's best to run it locally, unfortunately.
+
+If I get time, I'll switch the sound over to use Web Audio API.
 
 
 Controls
