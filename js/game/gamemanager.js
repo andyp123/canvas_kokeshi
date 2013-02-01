@@ -2,12 +2,12 @@
 Simple manager to handle input and updating everything
 */
 function GameManager() {
-	this.timeline_p1 = new Timeline(16, 560, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P1"), 12, 1) );
-	this.timeline_p2 = new Timeline(16, 592, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P2"), 12, 1) );
-	this.metronome = new Timeline(16, 16);
+	this.timeline_p1 = new Timeline(8, 560, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P1"), 12, 1) );
+	this.timeline_p2 = new Timeline(8, 592, new Sprite(g_ASSETMANAGER.getAsset("BEATS_P2"), 12, 1) );
+	this.metronome = new Timeline(8, 16);
 	this.metronome.sounds = [ "CLICK91" ];
-	//this.metronome.addMeasures([ "BACKING_1" ]);
-	//this.metronome.autoplay = true;
+	this.metronome.addMeasures([ "BACKING_1" ]);
+	this.metronome.autoplay = true;
 
 	this.sounds_p1 = [
 		"KOTO_A",
@@ -37,14 +37,21 @@ function GameManager() {
 
 	this.timeline_p2.sounds = this.sounds_p2;
 	this.timeline_p2.controls = this.keysP2;
-	//this.timeline_p2.addMeasures(duet.taiko);
+	this.timeline_p2.addMeasures(duet.taiko);
 
 	//kokeshi and bg
 	this.kokeshi = new Kokeshi();
 	this.background = new Background();
+
+	this.gameState = GameManager.STATE_READY;
 }
 
+GameManager.STATE_READY = 0;
+
 GameManager.prototype.startGame = function() {
+	if (this.gameState == GameManager.STATE_READY) {
+		//this.gameState == GameManager.STATE_
+	}
 }
 
 //start game
@@ -67,17 +74,29 @@ GameManager.prototype.update = function() {
 	//handle keyboard and mouse input
 	this.updateInput();
 
-	this.metronome.update();
+	//this.metronome.update();
 	this.timeline_p1.update();
 	this.timeline_p2.update();
+
+	if (this.timeline_p1.isClear() && this.timeline_p2.isClear()) {
+		this.gameStageClear();
+		this.timeline_p1.detectClear();
+		this.timeline_p2.detectClear();
+	}
 
 	this.background.update();
 	this.kokeshi.update();
 }
 
-GameManager.prototype.updateInput = function() {
-	var i;
+GameManager.prototype.gameStageClear = function() {
+	//stop and clear timing bars
+	//update kokeshi
+	this.kokeshi.levelUp();
+	//load new pattern
+	//start
+}
 
+GameManager.prototype.updateInput = function() {
 	//mostly input for debug and testing
 	var keysP1 = this.keysP1;
 	var keysP2 = this.keysP2;
@@ -86,6 +105,10 @@ GameManager.prototype.updateInput = function() {
 	var timeline_p2 = this.timeline_p2;
 	var metronome = this.metronome;
 
+	if (g_KEYSTATES.justPressed( KEYS.ENTER )) {
+		this.startGame();
+	}
+
 	if (g_KEYSTATES.justPressed( KEYS.SPACE )) {
 		timeline_p1.toggleAutoplay();
 		timeline_p2.toggleAutoplay();
@@ -93,8 +116,14 @@ GameManager.prototype.updateInput = function() {
 	if (g_KEYSTATES.justPressed( KEYS.M )) {
 		metronome.toggleAutoplay();
 	}
+	if (g_KEYSTATES.justPressed( KEYS.C )) {
+		timeline_p1.togglePause();
+		timeline_p2.togglePause();
+		metronome.togglePause();
+	}
 
 	//handle player 1 input
+	var i;
 	for (i = 0; i < keysP1.length; ++i) {
 		if (g_KEYSTATES.justPressed(keysP1[i])) {
 			g_SOUNDMANAGER.playSound(this.sounds_p1[i]);

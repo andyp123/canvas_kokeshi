@@ -75,7 +75,7 @@ BARS.defineBars = function() {
 		"KOTO_EASY_2",
 		"KOTO_EASY_3",
 		"KOTO_EASY_2",
-		"BASIC_2",
+		"BASIC_1",
 	];
 	BARS["TAIKO_EASY_1"] = [
 		"BASIC_1",
@@ -160,7 +160,8 @@ BARS.defineBars = function() {
 //koto and taiko together
 //in an array for sequential iteration of difficulty
 var DUETS = [
-	{ koto: BARS["KOTO_EASY_1"], taiko: BARS["TAIKO_EASY_1"] },
+//	{ koto: BARS["KOTO_HARD_1"], taiko: BARS["TAIKO_HARD_1"] },
+//	{ koto: BARS["KOTO_EASY_1"], taiko: BARS["TAIKO_EASY_1"] },
 	{ koto: BARS["KOTO_EASY_2"], taiko: BARS["TAIKO_EASY_2"] },
 	{ koto: BARS["KOTO_MEDIUM_1"], taiko: BARS["TAIKO_MEDIUM_1"] },
 	{ koto: BARS["KOTO_MEDIUM_2"], taiko: BARS["TAIKO_MEDIUM_2"] },

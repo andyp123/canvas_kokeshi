@@ -1,3 +1,5 @@
+/* BEAT INFO ******************************************************************
+*/
 function BeatInfo() {
 	this.status = BeatInfo.STATUS_READY;
 	this.id = 0;			//beat id (0 is rest)
@@ -11,20 +13,27 @@ BeatInfo.STATUS_READY = 0;
 BeatInfo.STATUS_MISSED = 4;
 BeatInfo.STATUS_HIT = 8;
 
+
+/* TIMELINE *******************************************************************
+*/
 function Timeline(posX, posY, beatSprite) {
-	this.measures = []; //TODO: REMOVE THIS
-	this.beatInfos = []; //same dimensions as measures, but stores detailed info about the beats
-	this.measureIndex = 0;
-	this.nearestBeat = null;
+	this.beats = [];
+	this.measureCount = 0; //this is equal to the end time. 1 measure = 1 second
+	this.hitBeats = 0; //how many beats the player hit
+	this.bumNotes = 0;
+	this.bumNoteLimit = 3; //if the player hits this many bum notes, they fail and the bar resets
+	this.barClear = Timeline.BARCLEAR_NOT; //set to true if all beats hit has been detected already
+	this.firstBeatEarly = false; //set to true when player hits first beat before the bar has finished playing
 
 	//if this is set to true, the timeline will play the measure
 	this.autoplay = false;
+	this.paused = true;
 
 	//timing
 	this.time = 0.0;
 	this.timePrev = 0.0;
 	this.tempo = 0.5;
-	this.errorTolerance = 0.2;
+	this.errorTolerance = 0.33;
 
 	//renderable stuff
 	this.beatSprite = beatSprite;
@@ -36,48 +45,74 @@ function Timeline(posX, posY, beatSprite) {
 	this.measureShift = 8;
 	this.barHeight = 32;
 
-	//set this to have autoplay use these sounds
-	this.sounds = null;
-	//controls for the player
-	this.controls = [];
+	this.sounds = []; //set this to have autoplay use these sounds
+	this.controls = []; //controls for the player
 }
 
-Timeline.prototype.clearMeasures = function() {
-	this.measures = [];
-	this.beatInfos = [];
+//full clear and empty data
+Timeline.prototype.clear = function() {
+	this.hitBeats = 0;
+	this.bumNotes = 0;
+	this.barClear = Timeline.BARCLEAR_NOT;
+	this.firstBeatEarly = false;
+
+	this.beats = [];
+	this.measureCount = 0;
+
+	this.time = 0;
+	this.timePrev = 0.0;
+	this.tempo = 0.5;
+
+	this.autoplay = false;
+	this.paused = true;
 }
 
-Timeline.prototype.resetBeatInfos = function() {
-	var i, j;
-	for (i = 0; i < this.beatInfos.length; ++i) {
-		var beatInfos = this.beatInfos[i];
-		for (j = 0; j < beatInfos.length; ++j) {
-			beatInfos[j].status = BeatInfo.STATUS_READY;
-		}
+Timeline.BARCLEAR_NOT = 0;
+Timeline.BARCLEAR_UNDETECTED = 1;
+Timeline.BARCLEAR_DETECTED = 2;
+
+Timeline.prototype.isClear = function() {
+	return this.barClear == Timeline.BARCLEAR_UNDETECTED;
+}
+
+Timeline.prototype.detectClear = function() {
+	this.barClear = Timeline.BARCLEAR_DETECTED;
+}
+
+Timeline.prototype.reset = function() {
+	for (var i = 0; i < this.beats.length; ++i) {
+		this.beats[i].status = BeatInfo.STATUS_READY;
 	}
+	this.hitBeats = 0;
+	this.barClear =  Timeline.BARCLEAR_NOT;
+	this.bumNotes = 0;
 }
 
+Timeline.prototype.invalidateBeatInfos = function() {
+	for (var i = 0; i < this.beats.length; ++i) {
+		this.beats[i].status = BeatInfo.STATUS_MISSED;
+	}
+	this.hitBeats = 0;
+}
+
+//when adding a measure, converts it into more useable BeatInfo form
 Timeline.prototype.addMeasure = function(measureName) {
 	var measure = MEASURES[measureName];
 	if (measure !== undefined) {
-		//extract the measure into more useable BeatInfo form
-		var beatInfos = [];
-		var measureStartTime = this.measures.length;
-		for (var i = 0; i < measure.length; ++i) {
+		var i, j;
+		for (i = 0, j = this.beats.length; i < measure.length; ++i) {
 			if (measure[i] > 0) {
 				var beatInfo = new BeatInfo();
 				beatInfo.id = measure[i];
 				beatInfo.frame = measure[i] - 1;
-				beatInfo.time = measureStartTime + i / measure.length;
-				beatInfo.measureIndex = this.measures.length;
-				beatInfo.beatIndex = i;
-				beatInfos[i] = beatInfo;
+				beatInfo.time = this.measureCount + i / measure.length;
+				beatInfo.beatIndex = j;
+				beatInfo.measureIndex = this.measureCount;
+				this.beats[j] = beatInfo;
+				j += 1;
 			}
 		}
-
-		this.measures.push(measure);
-		this.beatInfos.push(beatInfos);
-
+		this.measureCount += 1;
 		this.getNearestBeatToCurrentTime();
 	} else {
 		console.log("ERROR: measure with name " + measureName + " does not exist.");
@@ -91,15 +126,15 @@ Timeline.prototype.addMeasures = function(measureNames) {
 }
 
 Timeline.prototype.update = function() {
-	if (this.measures.length > 0) {
+	if (!this.paused && this.beats.length > 0) {
 		this.timePrev = this.time;
 		this.time += g_FRAMETIME_S * this.tempo;
 
-		if (this.time > this.measures.length) {
-			this.time = this.time % this.measures.length;
-			this.resetBeatInfos();
+		if (this.time > this.measureCount) {
+			//loop time and reset the beat infos
+			this.time = this.time % this.measureCount;
+			this.reset();
 		}
-		this.measureIndex = Math.floor(this.time);
 
 		//update the nearestBeatInfo and check we haven't missed the beat
 		var nearestBeatPrev = this.nearestBeat;
@@ -107,18 +142,55 @@ Timeline.prototype.update = function() {
 
 		//check to see if we hit the current beat
 		if (this.nearestBeat) {
-			if (this.nearestBeat.status == BeatInfo.STATUS_READY) {
-				if (this.autoplay && this.beatAtCurrentTime()) {
+			//first check that the player is not trying to hit the first beat from the end of the bar
+			if (this.nearestBeat.beatIndex == 0
+			 && this.time > this.measureCount - this.errorTolerance * this.tempo
+			 && g_KEYSTATES.justPressed(this.controls[this.nearestBeat.id - 1])) {
+				this.firstBeatEarly = true;
+				//alert("early!");
+			} else if (this.nearestBeat.status == BeatInfo.STATUS_READY) {
+				//we hit the first beat from the end of the bar
+				if (this.firstBeatEarly) {
 					this.nearestBeat.status = BeatInfo.STATUS_HIT;
-					g_SOUNDMANAGER.playSound(this.sounds[this.nearestBeat.id - 1]);
-				} else if (this.checkInput(this.controls)) {
-					this.nearestBeat.status = BeatInfo.STATUS_HIT;
-				} else if (nearestBeatPrev) {
-					if (nearestBeatPrev !== this.nearestBeat && nearestBeatPrev.status == BeatInfo.STATUS_READY) {
-						nearestBeatPrev.status = BeatInfo.STATUS_MISSED;
+					this.hitBeats += 1;
+					this.firstBeatEarly = false;
+				} else {
+					//loop through controls and check if we hit a beat
+					for (var i = 0; i < this.controls.length; ++i) {
+						if (g_KEYSTATES.justPressed(this.controls[i])) {
+							if (this.beatAtApproximateTime(i + 1)) {
+								this.nearestBeat.status = BeatInfo.STATUS_HIT;
+								this.hitBeats += 1;
+							} else {
+								//the player messed up (should count bum notes and invalidate if it exceeds a certain limit)
+								this.bumNotes += 1;
+								if (this.bumNotes >= this.bumNoteLimit) {
+									this.invalidateBeatInfos();
+									//play fuckup sound
+								}
+								
+							}
+						}
+					}
+
+					if (this.autoplay) {
+						if (this.beatAtCurrentTime()) {
+							this.nearestBeat.status = BeatInfo.STATUS_HIT;
+							g_SOUNDMANAGER.playSound(this.sounds[this.nearestBeat.id - 1]);
+						}
+					} else if (nearestBeatPrev) {
+						//this code is a little bit buggy. needs to be fixed
+						if (nearestBeatPrev !== this.nearestBeat && nearestBeatPrev.status == BeatInfo.STATUS_READY) {
+							nearestBeatPrev.status = BeatInfo.STATUS_MISSED;
+						}
 					}
 				}
 			}
+		}
+
+		//do something if the player hit all the beats
+		if (this.hitBeats == this.beats.length && this.barClear == Timeline.BARCLEAR_NOT) {
+			this.barClear = true;
 		}
 	}
 }
@@ -126,6 +198,7 @@ Timeline.prototype.update = function() {
 Timeline.prototype.checkInput = function(controls) {
 	var keyid = controls[this.nearestBeat.id - 1]
 	if (this.nearestBeat && keyid !== undefined && g_KEYSTATES.justPressed(keyid)) {
+		return
 		if (Math.abs(this.time - this.nearestBeat.time) <= this.errorTolerance * this.tempo) {
 			return true;
 		}
@@ -138,67 +211,39 @@ Timeline.prototype.checkInput = function(controls) {
 // TIME CHECKING FUNCTIONS //
 //-------------------------//
 Timeline.prototype.getNearestBeatToCurrentTime = function() {
-	var i, j;
-	var nearest = null;
-	for (i = 0; i < this.beatInfos.length; ++i) {
-		var beatInfos = this.beatInfos[i];
-		for (j = 0; j < beatInfos.length; ++j) {
-			var beat = beatInfos[j];
-			if (nearest && Math.abs(this.time - beat.time) > Math.abs(this.time - nearest.time)) {
-				break;
-			}
+	if (this.beats.length < 1) return null;
+
+	var nearest = this.beats[0];
+	for (var i = 1; i < this.beats.length; ++i) {
+		var beat = this.beats[i];
+		var nTime = (this.time - nearest.time > this.measureCount * 0.5) ? nearest.time + this.measureCount : nearest.time;
+		var bTime = (this.time - beat.time > this.measureCount * 0.5) ? beat.time + this.measureCount : beat.time;
+
+		if (Math.abs(this.time - bTime) < Math.abs(this.time - nTime)) {
 			nearest = beat;
 		}
 	}
-
 	return nearest;
 }
 
-//get the id of the nearest beat to the start of this time range
-//returns -1 if no beats are found. 0 is a rest
-Timeline.prototype.getBeatInTimeRange = function(start, end) {
-	var measure = this.measures[this.measureIndex];
-	var measureTime = end % this.measures.length - Math.floor(end);
-	var measureTimePrev = start % this.measures.length - Math.floor(start);
-
-	var nearestBeatIndex = Math.floor(measureTime * measure.length);
-	var nearestBeatTime = nearestBeatIndex / measure.length;
-	var beatType = measure[nearestBeatIndex];
-
-	if ((nearestBeatIndex == 0 && measureTimePrev > measureTime )
-	 || (measureTimePrev <= nearestBeatTime && measureTime > nearestBeatTime)) {
-		return beatType;
-	}
-
-	return -1;
-}
-
-//gets the beat id at the current time, with allowance for error
-//error is in seconds and scaled by the tempo
-Timeline.prototype.getBeatAtCurrentTimeWithError = function(error) {
-	error = error || 0;
-	error *= this.tempo;
-	var time1 = Math.abs((this.timePrev - error) % this.measures.length);
-	var time2 = Math.abs((this.time + error) % this.measures.length);
-	return this.getBeatInTimeRange(time1, time2);
-}
-
-Timeline.prototype.getBeatAtCurrentTime = function() {
-	return this.getBeatInTimeRange(this.timePrev, this.time);
-}
-
-Timeline.prototype.playAtCurrentTime = function() {
-	var beat = this.getBeatInTimeRange(this.timePrev, this.time);
-	if (this.sounds && beat > 0 && beat <= this.sounds.length) {
-		g_SOUNDMANAGER.playSound(this.sounds[beat - 1]);
+//checks for a beat at the approximate time
+Timeline.prototype.beatAtApproximateTime = function(id) {
+	if (this.nearestBeat) {
+		var t0 = this.time - this.errorTolerance * this.tempo;
+		var t1 = this.time + this.errorTolerance * this.tempo;
+		if ((t0 <= this.nearestBeat.time && t1 > this.nearestBeat.time)
+		 || (this.nearestBeat.time < t1 && this.timePrev > this.time)) { //time wrapped
+			return (id === undefined || this.nearestBeat.id == id);
+		}
 	}
 }
 
-Timeline.prototype.beatAtCurrentTime = function() {
+//checks exactly the current time using timePrev-time
+Timeline.prototype.beatAtCurrentTime = function(id) {
 	if (this.nearestBeat) {
 		if ((this.timePrev <= this.nearestBeat.time && this.time > this.nearestBeat.time)
 		 || (this.nearestBeat.time < this.time && this.timePrev > this.time)) { //time wrapped
-			return true;
+			return (id === undefined || this.nearestBeat.id == id);
 		}
 	}
 
@@ -209,13 +254,19 @@ Timeline.prototype.toggleAutoplay = function() {
 	this.autoplay = !this.autoplay;
 }
 
+Timeline.prototype.togglePause = function() {
+	this.paused = !this.paused;
+}
+
 //----------------//
 // DRAW FUNCTIONS //
 //----------------//
 Timeline.prototype.draw = function(ctx, xofs, yofs) {
+	if (this.beats.length < 1) return;
+
 	//draw bars
 	ctx.strokeStyle = "rgb(64,64,64)";
-	for (i = 0; i < this.measures.length; ++i) {
+	for (i = 0; i <= this.measureCount; ++i) {
 		x = this.pos.x + xofs + i * this.measureWidth;
 		y = this.pos.y + yofs
 		Util.drawLine(ctx, x, y, x, y + this.barHeight);
@@ -223,16 +274,16 @@ Timeline.prototype.draw = function(ctx, xofs, yofs) {
 
 	//draw current time
 	ctx.strokeStyle = "rgb(255,255,255)";
-	x = this.pos.x + xofs + Math.floor(this.time / this.measures.length * (this.measureWidth * this.measures.length));
+	x = this.pos.x + xofs + this.time * this.measureWidth;
 	y = this.pos.y + yofs;
 	Util.drawLine(ctx, x, y, x, y + this.barHeight);
 
+	//draw beats
 	var i, j;
 	var y = this.pos.y + this.barHeight * 0.5 + yofs;
-	for (i = 0; i < this.measures.length; ++i) {
-		var beatInfos = this.beatInfos[i];
-		for (j = 0; j < beatInfos.length; ++j) {
-			var beat = beatInfos[j];
+	for (i = 0; i < this.beats.length; ++i) {
+		var beat = this.beats[i];
+		if (beat.id > 0) {
 			var frame = beat.frame;
 			var x = this.pos.x + xofs + beat.time * this.measureWidth;
 			this.beatSprite.draw(ctx, x, y, frame + beat.status);
@@ -240,47 +291,21 @@ Timeline.prototype.draw = function(ctx, xofs, yofs) {
 	}
 }
 
-Timeline.prototype.drawDebugMeasure = function(ctx, xofs, yofs, measure) {
-	if (measure.length > 0) {
-		var beatWidth = this.measureWidth / measure.length;
-
-		var x, y, i;
-		x = xofs;
-		y = yofs + Math.floor(this.barHeight * 0.5);
-		for (i = 0; i < measure.length; ++i) {
-			if (measure[i] > 0) {
-				Util.drawRectangleCentered(ctx, x, y, 8, 8);
-			}
-			x += beatWidth;
-		}
-	}
-}
-
 Timeline.prototype.drawDebug = function(ctx, xofs, yofs) {
-	if (this.measures.length < 1) return;
+	if (this.beats.length < 1) return;
 
-	var i, x, y;
+	var i, x, y, err;
 
-	//draw bars
-	for (i = 0; i < this.measures.length; ++i) {
-		x = this.pos.x + xofs + i * this.measureWidth;
-		y = this.pos.y + yofs
-		Util.drawLine(ctx, x, y, x, y + this.barHeight);
-	}
-
-	//draw current time
-	x = this.pos.x + xofs + Math.floor(this.time / this.measures.length * (this.measureWidth * this.measures.length));
+	//draw current time with error
+	x = this.pos.x + xofs + this.time * this.measureWidth;
 	y = this.pos.y + yofs;
+	err = this.errorTolerance * this.tempo * this.measureWidth;
 	Util.drawLine(ctx, x, y, x, y + this.barHeight);
-
-	//draw measures
-	for (i = 0; i < this.measures.length; ++i) {
-		measureOffset = i * this.measureWidth;
-		this.drawDebugMeasure(ctx, measureOffset + this.pos.x + xofs, this.pos.y + yofs, this.measures[i]);
-	}
+	Util.drawLine(ctx, x - err, y, x - err, y + this.barHeight);
+	Util.drawLine(ctx, x + err, y, x + err, y + this.barHeight);
 
 	//draw outline
-	Util.drawRectangle(ctx, this.pos.x + xofs, this.pos.y + yofs, this.measureWidth * this.measures.length, this.barHeight);
+	Util.drawRectangle(ctx, this.pos.x + xofs, this.pos.y + yofs, this.measureWidth * this.measureCount, this.barHeight);
 }
 
 Timeline.prototype.addDrawCall = function() {

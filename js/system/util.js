@@ -185,12 +185,12 @@ Util.objToString = function(o) {
 	var pv;
 	var rv = "";
 	for (p in o) {
-		rv += "[" + p + ": ";
+		rv += "" + p + ": ";
 		pv = new String(o[p]);
 		if (pv.search("function") == 0) {
 			rv += "[FUNCTION], ";
 		} else {
-			rv += pv + "], ";
+			rv += pv + ", ";
 		}	
 	}
 	return rv;

@@ -35,6 +35,16 @@ function Kokeshi() {
 	this.baseSprite.setOffset(Sprite.ALIGN_BOTTOM);
 	//head sprite and face parts need unified pivots for rotation!
 	this.headSprite.setOffset(Sprite.ALIGN_BOTTOM, 0, -8);
+
+	this.level = 0;
+}
+
+Kokeshi.prototype.levelUp = function() {
+	if (this.level < this.sprites.length) {
+		this.level += 1;
+	} else {
+		this.level = this.sprites.length;
+	}
 }
 
 Kokeshi.prototype.update = function() {
@@ -42,7 +52,7 @@ Kokeshi.prototype.update = function() {
 
 Kokeshi.prototype.draw = function(ctx, xofs, yofs) {
 	var xpos = g_SCREEN.width * 0.5 + xofs;
-	var progressIndex = this.sprites.length;//Math.floor(Util.clampScaled(g_GAMETIME_MS, 0, 10000) * this.sprites.length);
+	var progressIndex = this.level;
 
 	//draw head parts
 	ctx.save();
