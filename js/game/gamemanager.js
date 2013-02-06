@@ -43,58 +43,171 @@ function GameManager() {
 	this.kokeshi = new Kokeshi();
 	this.background = new Background();
 
-	this.gameState = GameManager.STATE_READY;
+	//this is either null or a function to change the main update for non-interactive sections of the game
+	this.sub = null;
+	this.sub_end = false;
+	this.sub_state = 0;
+	this.sub_resumeTime = 0; //use this to add delays
+
+	this.setSub(GameManager.SUB_intro);
 }
 
-GameManager.STATE_READY = 0;
+// SUBROUTINES //
 
-GameManager.prototype.startGame = function() {
-	if (this.gameState == GameManager.STATE_READY) {
-		//this.gameState == GameManager.STATE_
+//game intro (KOKESHI logo appears)
+//press ENTER to play game (flashes)
+//start level
+//	level intro (metronome for a single measure, then play entire bar once
+//	pass control to player
+//main update (player in control)
+//level up!
+//	stop timelines and launch some effects
+//	level up kokeshi
+//	clear timelines
+//	load new pattern
+//	switch to level start
+
+
+
+
+GameManager.SUB_intro = function() {
+	console.log("SUB_intro");
+	switch (this.sub_state) {
+		case 0:
+			this.background.title.start();
+			this.sub_sleep(3000);
+			break;
+		case 1:
+			if (g_KEYSTATES.justPressed( KEYS.ENTER )) {
+				this.setSub(GameManager.SUB_levelIntro);
+			}
+			break;
+		default:
+			this.sub_end = true;
 	}
 }
 
-//start game
-//load new duet
-//play duet once
-//play one bar of metronome
-//check player input as player performs duet
-//repeat the pattern until they make no mistakes
-//if no mistakes made
-//add a level to the kokeshi
-//load next duet
-//repeat
+GameManager.SUB_levelIntro = function() {
+	console.log("SUB_levelIntro" + " (state is " + this.sub_state + ")");
+	switch (this.sub_state) {
+		case 0:
+			this.metronome.play(1, Timeline.AUTOPLAY_ON);
+			this.sub_state += 1;
+			break;
+		case 1:
+			if (this.metronome.paused) {
+				this.metronome.play(0, Timeline.AUTOPLAY_ON);
+				this.timeline_p1.play(1, Timeline.AUTOPLAY_ON);
+				this.timeline_p2.play(1, Timeline.AUTOPLAY_ON);
+				this.sub_state += 1;
+			}
+			break;
+		case 2:
+			if (this.timeline_p1.paused) {
+				this.metronome.play(0, Timeline.AUTOPLAY_ON);
+				this.timeline_p1.play();
+				this.timeline_p2.play();
+				this.setSub(GameManager.SUB_main);
+			}
+			break;
+		default:
+			this.sub_end = true;
+	}
+}
 
+GameManager.SUB_main = function() {
+	console.log("SUB_main");
+	switch (this.sub_state) {
+		case 0:
+			if (this.timeline_p1.isClear() && this.timeline_p2.isClear()) {
+				this.timeline_p1.detectClear();
+				this.timeline_p2.detectClear();
+				this.setSub(GameManager.SUB_levelUp);
+			}
+			break;
+		default:
+			this.sub_end = true;
+	}
+}
 
+GameManager.SUB_levelUp = function() {
+	console.log("SUB_levelUp");
+	switch (this.sub_state) {
+		case 0:
+			this.timeline_p1.pause();
+			this.timeline_p2.pause();
+			this.metronome.pause();
+			//launch fireworks or something!
+			this.sub_sleep(3000);
+			break;
+		case 1:
+			this.kokeshi.levelUp();
+			this.duetIndex += (this.duetIndex < DUETS.length - 1) ? 1 : 0;
+			this.sub_sleep(1000);
+			break;
+		case 2:
+			this.timeline_p1.clear();
+			this.timeline_p2.clear();
+			var duet = DUETS[this.duetIndex];
+			this.timeline_p1.addMeasures(duet.koto);
+			this.timeline_p2.addMeasures(duet.taiko);
+			this.sub_sleep(500);
+			break;
+		case 3:
+			this.setSub(GameManager.SUB_levelIntro);
+			break;
+		default:
+			this.sub_end = true;
+	}
+
+}
+
+//main update
 GameManager.prototype.update = function() {
-	if (g_GAMETIME_MS > 1000) {
-		this.background.title.start();
-	}
-
 	//handle keyboard and mouse input
 	this.updateInput();
 
-	//this.metronome.update();
+	//updates the current sub routine
+	this.updateSub();
+
+	//always call everything here
+	this.metronome.update();
 	this.timeline_p1.update();
 	this.timeline_p2.update();
-
-	if (this.timeline_p1.isClear() && this.timeline_p2.isClear()) {
-		this.gameStageClear();
-		this.timeline_p1.detectClear();
-		this.timeline_p2.detectClear();
-	}
-
 	this.background.update();
 	this.kokeshi.update();
 }
 
-GameManager.prototype.gameStageClear = function() {
-	//stop and clear timing bars
-	//update kokeshi
-	this.kokeshi.levelUp();
-	//load new pattern
-	//start
+GameManager.prototype.updateSub = function() {
+	if (this.sub !== null) {
+		//don't call the sub if it is asleep
+		if (g_GAMETIME_MS - this.sub_resumeTime < 0) {
+			return;
+		}
+
+		//check the state
+		if (this.sub_end) {
+			this.sub = null;
+		} else {
+			this.sub.call(this);
+		}
+	}
 }
+
+GameManager.prototype.setSub = function(sub) {
+	this.sub = sub;
+	this.sub_state = 0;
+	this.sub_end = false;
+}
+
+// sleep for time ms and increment the state for when the sleep is over
+GameManager.prototype.sub_sleep = function(time) {
+	this.sub_resumeTime = g_GAMETIME_MS + Math.abs(time);
+	this.sub_state += 1;
+}
+
+//END OF SUBROUTINES //
+
 
 GameManager.prototype.updateInput = function() {
 	//mostly input for debug and testing
@@ -104,10 +217,6 @@ GameManager.prototype.updateInput = function() {
 	var timeline_p1 = this.timeline_p1;
 	var timeline_p2 = this.timeline_p2;
 	var metronome = this.metronome;
-
-	if (g_KEYSTATES.justPressed( KEYS.ENTER )) {
-		this.startGame();
-	}
 
 	if (g_KEYSTATES.justPressed( KEYS.SPACE )) {
 		timeline_p1.toggleAutoplay();
@@ -122,6 +231,7 @@ GameManager.prototype.updateInput = function() {
 		metronome.togglePause();
 	}
 
+	//TODO: move player input entirely into timeline!
 	//handle player 1 input
 	var i;
 	for (i = 0; i < keysP1.length; ++i) {

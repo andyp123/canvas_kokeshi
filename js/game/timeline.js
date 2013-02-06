@@ -24,6 +24,8 @@ function Timeline(posX, posY, beatSprite) {
 	this.bumNoteLimit = 3; //if the player hits this many bum notes, they fail and the bar resets
 	this.barClear = Timeline.BARCLEAR_NOT; //set to true if all beats hit has been detected already
 	this.firstBeatEarly = false; //set to true when player hits first beat before the bar has finished playing
+	this.playCount = 0; //incremented each time the bar is played
+	this.playCountMax = 0; //automatically pause if playCount >= this
 
 	//if this is set to true, the timeline will play the measure
 	this.autoplay = false;
@@ -46,7 +48,7 @@ function Timeline(posX, posY, beatSprite) {
 	this.barHeight = 32;
 
 	this.sounds = []; //set this to have autoplay use these sounds
-	this.controls = []; //controls for the player
+	this.controls = [ 0, 0, 0, 0]; //controls for the player
 }
 
 //full clear and empty data
@@ -55,6 +57,8 @@ Timeline.prototype.clear = function() {
 	this.bumNotes = 0;
 	this.barClear = Timeline.BARCLEAR_NOT;
 	this.firstBeatEarly = false;
+	this.playCount = 0;
+	this.playCountMax = 0;
 
 	this.beats = [];
 	this.measureCount = 0;
@@ -71,6 +75,8 @@ Timeline.BARCLEAR_NOT = 0;
 Timeline.BARCLEAR_UNDETECTED = 1;
 Timeline.BARCLEAR_DETECTED = 2;
 
+Timeline.AUTOPLAY_ON = true;
+
 Timeline.prototype.isClear = function() {
 	return this.barClear == Timeline.BARCLEAR_UNDETECTED;
 }
@@ -84,7 +90,7 @@ Timeline.prototype.reset = function() {
 		this.beats[i].status = BeatInfo.STATUS_READY;
 	}
 	this.hitBeats = 0;
-	this.barClear =  Timeline.BARCLEAR_NOT;
+	this.barClear = Timeline.BARCLEAR_NOT;
 	this.bumNotes = 0;
 }
 
@@ -134,6 +140,12 @@ Timeline.prototype.update = function() {
 			//loop time and reset the beat infos
 			this.time = this.time % this.measureCount;
 			this.reset();
+
+			this.playCount += 1;
+			if (this.playCountMax > 0 && this.playCount >= this.playCountMax) {
+				this.paused = true;
+				return;
+			}
 		}
 
 		//update the nearestBeatInfo and check we haven't missed the beat
@@ -161,6 +173,7 @@ Timeline.prototype.update = function() {
 							if (this.beatAtApproximateTime(i + 1)) {
 								this.nearestBeat.status = BeatInfo.STATUS_HIT;
 								this.hitBeats += 1;
+								//g_SOUNDMANAGER.playSound(this.sounds[this.nearestBeat.id - 1]);
 							} else {
 								//the player messed up (should count bum notes and invalidate if it exceeds a certain limit)
 								this.bumNotes += 1;
@@ -205,6 +218,17 @@ Timeline.prototype.checkInput = function(controls) {
 	}
 
 	return false;
+}
+
+Timeline.prototype.play = function(playCountMax, autoplay) {
+	this.playCountMax = (playCountMax !== undefined) ? playCountMax : 0;
+	this.autoplay = (autoplay !== undefined) ? true : false;
+	this.time = 0.0;
+	this.paused = false;
+}
+
+Timeline.prototype.pause = function() {
+	this.paused = true;
 }
 
 //-------------------------//
