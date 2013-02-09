@@ -75,12 +75,16 @@ GameManager.SUB_intro = function() {
 	switch (this.sub_state) {
 		case 0:
 			this.background.title.start();
-			this.sub_sleep(3000);
+			this.sub_sleep(5000);
 			break;
 		case 1:
 			if (g_KEYSTATES.justPressed( KEYS.ENTER )) {
-				this.setSub(GameManager.SUB_levelIntro);
+				g_SOUNDMANAGER.playSound("START");
+				this.sub_sleep(2000);
 			}
+			break;
+		case 2:
+			this.setSub(GameManager.SUB_levelIntro);
 			break;
 		default:
 			this.sub_end = true;
@@ -88,7 +92,7 @@ GameManager.SUB_intro = function() {
 }
 
 GameManager.SUB_levelIntro = function() {
-	console.log("SUB_levelIntro" + " (state is " + this.sub_state + ")");
+	console.log("SUB_levelIntro");
 	switch (this.sub_state) {
 		case 0:
 			this.metronome.play(1, Timeline.AUTOPLAY_ON);
@@ -104,7 +108,7 @@ GameManager.SUB_levelIntro = function() {
 			break;
 		case 2:
 			if (this.timeline_p1.paused) {
-				this.metronome.play(0, Timeline.AUTOPLAY_ON);
+				this.metronome.pause();
 				this.timeline_p1.play();
 				this.timeline_p2.play();
 				this.setSub(GameManager.SUB_main);
@@ -138,12 +142,13 @@ GameManager.SUB_levelUp = function() {
 			this.timeline_p2.pause();
 			this.metronome.pause();
 			//launch fireworks or something!
-			this.sub_sleep(3000);
+			this.sub_sleep(1000);
 			break;
 		case 1:
+			g_SOUNDMANAGER.playSound("CLEAR");
 			this.kokeshi.levelUp();
 			this.duetIndex += (this.duetIndex < DUETS.length - 1) ? 1 : 0;
-			this.sub_sleep(1000);
+			this.sub_sleep(3000);
 			break;
 		case 2:
 			this.timeline_p1.clear();

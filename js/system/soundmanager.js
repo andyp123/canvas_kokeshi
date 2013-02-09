@@ -55,7 +55,7 @@ function SoundManager() {
 }
 
 SoundManager.LOW_PRIORITY_CHANNEL = 0; //sounds playing in this channel might be stopped by other sounds playing over the top
-SoundManager.MAX_CHANNELS = 8;
+SoundManager.MAX_CHANNELS = 16;
 //SoundManager.AUDIO_FORMAT = "audio/ogg";
 
 SoundManager.prototype.playMusic = function (name) {

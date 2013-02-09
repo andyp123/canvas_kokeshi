@@ -21,7 +21,7 @@ function Timeline(posX, posY, beatSprite) {
 	this.measureCount = 0; //this is equal to the end time. 1 measure = 1 second
 	this.hitBeats = 0; //how many beats the player hit
 	this.bumNotes = 0;
-	this.bumNoteLimit = 3; //if the player hits this many bum notes, they fail and the bar resets
+	this.bumNoteLimit = 5; //if the player hits this many bum notes, they fail and the bar resets
 	this.barClear = Timeline.BARCLEAR_NOT; //set to true if all beats hit has been detected already
 	this.firstBeatEarly = false; //set to true when player hits first beat before the bar has finished playing
 	this.playCount = 0; //incremented each time the bar is played

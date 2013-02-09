@@ -22,6 +22,8 @@ MEASURES.defineMeasures = function() {
 	MEASURES["KOTO_EASY_1"] = [ 1,X,2,2 ];
 	MEASURES["KOTO_EASY_2"] = [ 1,2 ];
 	MEASURES["KOTO_EASY_3"] = [ 1,1,2,X ];
+	MEASURES["KOTO_EASY_4"] = [ 1,3 ];
+	MEASURES["KOTO_EASY_5"] = [ 2 ];
 
 	MEASURES["KOTO_MEDIUM_1"] = [ 2,1,3,1 ];
 	MEASURES["KOTO_MEDIUM_2"] = [ 4,2,3,2 ];
@@ -29,22 +31,39 @@ MEASURES.defineMeasures = function() {
 	MEASURES["KOTO_MEDIUM_4"] = [ 4,2 ];
 	MEASURES["KOTO_MEDIUM_5"] = [ 4,3,2,X ];
 	MEASURES["KOTO_MEDIUM_6"] = [ 1,1,3,2 ];
+	MEASURES["KOTO_MEDIUM_6"] = [ 2,3,4,3 ];
+	MEASURES["KOTO_MEDIUM_7"] = [ 2,X,1,X ];
+
+	MEASURES["KOTO_MEDIUM_8"] = [ 4,X,4,4,2,X,X,X ];
+	MEASURES["KOTO_MEDIUM_9"] = [ 3,X,3,3,2,X,X,X ];
 
 	MEASURES["KOTO_HARD_1"] = [ 1,X,3,2 ];
 	MEASURES["KOTO_HARD_2"] = [ 1,X,4,2 ];
-	MEASURES["KOTO_HARD_3"] = [ 1,X,X,2,3,X,4,X,3,X,X,X, ];
+	MEASURES["KOTO_HARD_3"] = [ 1,X,2,3,4,X,3,X ];
 	MEASURES["KOTO_HARD_4"] = [ 2,X,1,X ];
 
-	MEASURES["KOTO_HARD_5"] = [ 1,X,4,3,2,X,1,X ];
-	MEASURES["KOTO_HARD_6"] = [ 1,X,3,2,2,X,1,X ];
-	MEASURES["KOTO_HARD_7"] = [ 1,X,2,3,4,X,1,X ];
-	MEASURES["KOTO_HARD_8"] = [ 1,2,3,2,2,X,1,X ];
+	MEASURES["KOTO_HARD_5"] = [ 1,X,4,3,2,X,X,X ];
+	MEASURES["KOTO_HARD_6"] = [ 1,X,3,2,2,X,X,X ];
+	MEASURES["KOTO_HARD_7"] = [ 1,X,2,3,4,X,X,X ];
+	MEASURES["KOTO_HARD_8"] = [ 1,2,3,2,2,X,X,X ];
+
+	MEASURES["KOTO_MASTER_1"] = [ 1,X,2,3,2,X,1,X,4,X,2,3,2,X,1,X ];
+	MEASURES["KOTO_MASTER_2"] = [ 1,X,2,3,2,X,1,X,2,X,X,X,2,X,X,X ];
+	MEASURES["KOTO_MASTER_3"] = [ 2,4,2,3,2,X,1,X,2,X,X,X,2,X,X,X ];
 
 	//taiko patterns
+	MEASURES["TAIKO_EASY_1"] = [ 1,X,4,1 ];
+	MEASURES["TAIKO_EASY_2"] = [ 1,1,4,4 ];
+
 	MEASURES["TAIKO_MEDIUM_1"] = [ 1,X,4,1,1,X,4,X ];
 	MEASURES["TAIKO_MEDIUM_2"] = [ 1,X,4,1,1,X,4,4 ];
 	MEASURES["TAIKO_MEDIUM_3"] = [ 1,X,1,1,4,X,1,X ];
 	MEASURES["TAIKO_MEDIUM_4"] = [ 2,X,3,2,4,X,1,X ];
+
+
+	MEASURES["TAIKO_MEDIUM_5"] = [ 1,X,2,3,X,X,4,X ];
+	MEASURES["TAIKO_MEDIUM_6"] = [ 1,1,2,1,X,X,4,4 ];
+	MEASURES["TAIKO_MEDIUM_7"] = [ 1,X,2,3,X,X,4,4 ];
 
 	MEASURES["TAIKO_HARD_1"] = [ 1,X,2,3,3,X,3,X ];
 	MEASURES["TAIKO_HARD_2"] = [ 1,X,2,3,1,X,2,3 ];
@@ -53,10 +72,11 @@ MEASURES.defineMeasures = function() {
 	MEASURES["TAIKO_HARD_4"] = [ 1,X,2,1,3,X,4,X ];
 	MEASURES["TAIKO_HARD_5"] = [ 1,X,2,1,3,X,4,4 ];
 	MEASURES["TAIKO_HARD_6"] = [ 1,X,2,1,1,X,2,1 ];
-
-
 	MEASURES["TAIKO_HARD_7"] = [ 1,X,1,1,4,X,1,X ];
 	MEASURES["TAIKO_HARD_8"] = [ 2,X,3,2,4,X,1,X ];
+
+	MEASURES["TAIKO_MASTER_1"] = [ 1,X,3,2,3,X,1,X,4,X,4,X,3,2,3,X ];
+	MEASURES["TAIKO_MASTER_2"] = [ 1,X,3,2,3,X,1,X,1,X,X,X,4,X,4,X ];
 
 
 	//metronome patterns
@@ -97,6 +117,32 @@ BARS.defineBars = function() {
 		"BASIC_3",
 	];
 
+	BARS["KOTO_EASY_3"] = [
+		"KOTO_EASY_2",
+		"KOTO_EASY_2",
+		"KOTO_EASY_4",
+		"KOTO_EASY_5",
+	];
+	BARS["TAIKO_EASY_3"] = [
+		"BASIC_1",
+		"BASIC_1",
+		"BASIC_1",
+		"BASIC_3",
+	];
+
+	BARS["KOTO_EASY_4"] = [
+		"KOTO_MEDIUM_6",
+		"KOTO_MEDIUM_6",
+		"KOTO_MEDIUM_6",
+		"KOTO_MEDIUM_7",
+	];
+	BARS["TAIKO_EASY_4"] = [
+		"TAIKO_EASY_1",
+		"TAIKO_EASY_1",
+		"TAIKO_EASY_1",
+		"TAIKO_EASY_2",
+	];
+
 	BARS["KOTO_MEDIUM_1"] = [
 		"KOTO_MEDIUM_1",
 		"KOTO_MEDIUM_2",
@@ -121,6 +167,19 @@ BARS.defineBars = function() {
 		"TAIKO_MEDIUM_4",
 		"TAIKO_MEDIUM_3",
 		"TAIKO_MEDIUM_4",
+	];
+
+	BARS["KOTO_MEDIUM_3"] = [
+		"KOTO_MEDIUM_8",
+		"KOTO_MEDIUM_9",
+		"KOTO_MEDIUM_3",
+		"KOTO_MEDIUM_9",
+	];
+	BARS["TAIKO_MEDIUM_3"] = [
+		"TAIKO_MEDIUM_5",
+		"TAIKO_MEDIUM_5",
+		"TAIKO_MEDIUM_6",
+		"TAIKO_MEDIUM_7",
 	];
 
 	BARS["KOTO_HARD_1"] = [
@@ -155,15 +214,32 @@ BARS.defineBars = function() {
 		"TAIKO_HARD_7",
 		"TAIKO_HARD_8",
 	];
+
+	BARS["KOTO_MASTER_1"] = [
+		"KOTO_MASTER_1",
+		"KOTO_MASTER_2",
+		"KOTO_MASTER_1",
+		"KOTO_MASTER_3",
+	];
+	BARS["TAIKO_MASTER_1"] = [
+		"TAIKO_MASTER_1",
+		"TAIKO_MASTER_1",
+		"TAIKO_MASTER_1",
+		"TAIKO_MASTER_2",
+	];
 }();
 
 //koto and taiko together
 //in an array for sequential iteration of difficulty
 var DUETS = [
+	{ koto: BARS["KOTO_EASY_3"], taiko: BARS["TAIKO_EASY_3"] },
 	{ koto: BARS["KOTO_EASY_1"], taiko: BARS["TAIKO_EASY_1"] },
 	{ koto: BARS["KOTO_EASY_2"], taiko: BARS["TAIKO_EASY_2"] },
+	{ koto: BARS["KOTO_EASY_4"], taiko: BARS["TAIKO_EASY_4"] },
 	{ koto: BARS["KOTO_MEDIUM_1"], taiko: BARS["TAIKO_MEDIUM_1"] },
 	{ koto: BARS["KOTO_MEDIUM_2"], taiko: BARS["TAIKO_MEDIUM_2"] },
+	{ koto: BARS["KOTO_MEDIUM_3"], taiko: BARS["TAIKO_MEDIUM_3"] },
 	{ koto: BARS["KOTO_HARD_1"], taiko: BARS["TAIKO_HARD_1"] },
 	{ koto: BARS["KOTO_HARD_2"], taiko: BARS["TAIKO_HARD_2"] },
+	{ koto: BARS["KOTO_MASTER_1"], taiko: BARS["TAIKO_MASTER_1"] },
 ];

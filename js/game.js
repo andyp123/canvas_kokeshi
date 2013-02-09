@@ -35,18 +35,20 @@ function game_queueData() {
 		g_ASSETMANAGER.queueAssets(data);
 		data = [
 			"sfx/intro.wav",
+			"sfx/start.wav",
+			"sfx/clear.wav",
 			//taiko
-			"sfx/click91.wav",
 			"sfx/chu22.wav",
-			"sfx/stick1.wav",
 			"sfx/shime65.wav",
 			"sfx/shime95.wav",
-			"sfx/bell1.wav",
+			"sfx/stick1.wav",
 			//koto
-			"sfx/koto_a.mp3",
-			"sfx/koto_b.mp3",
-			"sfx/koto_c.mp3",
-			"sfx/koto_d.mp3",
+			"sfx/koto_a.wav",
+			"sfx/koto_b.wav",
+			"sfx/koto_c.wav",
+			"sfx/koto_d.wav",
+			//metronome
+			"sfx/click91.wav",
 		];
 		g_SOUNDMANAGER.loadSounds(data);
 }
