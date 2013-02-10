@@ -1,0 +1,29 @@
+TODO:
++ more refined updating of kokeshi
+  - head shouldn't shake to begin with
+  - head shake should match tempo
+  - level up should be animated better
+  - move level up sound from game manager to kokeshi?
+  - face should animate depending on how well player is doing
++ add koto and taiko players
+  - koto played by woman
+  - taiko played by man
+  - simple animation - 1 or 2 frames per beat
+  - animation depends on beat type?
++ particle effects
+  - fireworks in bg on game clear
+  - timeline beats should shoot into the air and power up the kokeshi on stage clear
+  - small heart particles from characters
+  - some kind of effect for missed beats
++ more patterns
+  - another 1 or 2 master patterns
+  - more hard patterns?
+  - hard + medium should be merged?
+  - master is new hard?
++ better beat matching
+  - current system not robust on harder patterns
+  - success should not be so black/white as it is now - require percentage to clear (80%+)
+  - more feedback on missed or bum notes
++ check all sound files and trim any crap from the start and end
++ convert all sounds to ogg? leave as wav?
++ free play mode

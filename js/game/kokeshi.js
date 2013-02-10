@@ -55,7 +55,7 @@ Kokeshi.prototype.draw = function(ctx, xofs, yofs) {
 	var progressIndex = this.level;
 
 	//draw head parts
-	var angle = 15 * Util.DEG_TO_RAD;
+	var angle = 7.5 * Util.DEG_TO_RAD;
 	var frequency = g_GAMETIME_MS / 1000.0 * Math.PI;
 	ctx.save();
 	ctx.translate(xpos, yofs + 208);

@@ -3,9 +3,7 @@ Simple sprite class that can display a single frame image or an indicated
 frame from a multi-frame image (assumed frame order TL->BR)
 
 TODO:
-+add rotation to spite draw method
-+allow aligning to edge, corner or arbitrary position
-+reverse frame order so it's BL->TR
++add rotation to sprite draw method
 */
 
 
